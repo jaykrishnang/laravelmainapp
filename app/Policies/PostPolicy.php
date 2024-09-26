@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PostPolicy
@@ -53,6 +54,11 @@ class PostPolicy
      */
     public function update(User $user, Post $post)
     {
+        Log::info('Update - Middleware mustbelogin triggered');
+        if($user->isAdmin === 1) 
+        {
+            return true;
+        }
         return $user->id === $post->user_id;
     }
 
@@ -65,6 +71,11 @@ class PostPolicy
      */
     public function delete(User $user, Post $post)
     {
+        Log::info('Delete - Middleware mustbelogin triggered');
+        if($user->isAdmin === 1)
+        {
+            return true;
+        }
         return $user->id === $post->user_id;
     }
 
