@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -15,6 +16,11 @@ use App\Http\Controllers\UserController;
 |
 */
 
+//Admins Only
+Route::get('/admins-only', function(){
+    return('Only Admin can view this pages');
+})->middleware('can:visitAdminPages');
+
 //User Related Routes
 Route::get('/', [UserController::class, "showCorrectHomepage"])->name('login');
 Route::post('/register', [UserController::class, "register"])->middleware('guest');
@@ -25,9 +31,9 @@ Route::post('/logout', [UserController::class, "logout"])->middleware('mustBeLog
 Route::get('/create-post', [PostController::class, "showCreateForm"])->middleware('mustBeLoggedIn');
 Route::post('/create-post', [PostController::class, "storeNewPost"])->middleware('mustBeLoggedIn');
 Route::get('/post/{post}', [PostController::class, "viewSinglePost"])->middleware('mustBeLoggedIn');
-Route::delete('/post/{post}', [PostController::class, "delete"])->middleware('can:delete, post');
-Route::get('/post/{post}/edit', [PostController::class, "showEditForm"]);
-Route::put('/post/{post}', [PostController::class, "actuallyUpdate"]);
+Route::delete('/post/{post}', [PostController::class, "delete"])->middleware('can:delete,post');
+Route::get('/post/{post}/edit', [PostController::class, "showEditForm"])->middleware('can:update,post');
+Route::put('/post/{post}', [PostController::class, "actuallyUpdate"])->middleware('can:update,post');
 
 //Profile Related Routes
 Route::get('/profile/{user:username}', [UserController::class, "profile"]);
